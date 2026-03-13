@@ -4,7 +4,6 @@ A personal job application tracker built with React and Tailwind — log applica
 
 No backend required. All data is stored in your browser via localStorage.
 
-**[Live Demo](https://your-username.github.io/job-application-tracker/)**
 
 ---
 
@@ -76,13 +75,3 @@ src/
 | Add user accounts | Supabase Auth + auth provider wrapper |
 
 ---
-
-## Deployment
-
-Deployed via GitHub Pages using `gh-pages`.
-
-```bash
-npm run deploy
-```
-
-See `vite.config.js` for the `base` path configuration.
