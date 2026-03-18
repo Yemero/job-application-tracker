@@ -9,5 +9,7 @@ export default defineConfig({
   ],
   server: {
     open: true,
+    port: 5173,      // ← always use this port
+    strictPort: true, // ← fail instead of silently picking a different port
   },
 })

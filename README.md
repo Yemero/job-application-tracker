@@ -53,14 +53,15 @@ src/
 
 ## Statuses
 
-| Status | Meaning |
-|---|---|
-| Applied | Submitted, no response yet |
-| Awaiting Reply | Follow-up sent or response expected |
-| Interviewing | Active in the interview process |
-| Offered | Received an offer |
-| Ghosted | No response after a long time |
-| Rejected | Explicitly rejected |
+| Status                | Meaning                               |
+|---                    |---                                    |
+| Applied               | Submitted, no response yet            |
+| Awaiting Reply        | Follow-up sent or response expected   |
+| Interviewing          | Active in the interview process       |
+| Interviewing Rejected | Rejected after interviews             |
+| Offered               | Received an offer                     |
+| Ghosted               | No response after a long time         |
+| Rejected              | Explicitly rejected                   |
 
 ---
 

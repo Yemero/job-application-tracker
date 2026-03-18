@@ -183,8 +183,7 @@ function InlineStatus({ value, onSave }) {
 }
 
 // ── Constants ─────────────────────────────────────────────────────────────────
-const FILTERS = ["all", "applied", "awaiting", "interviewing", "offered", "ghosted", "rejected"]
-
+const FILTERS = ["all", "applied", "awaiting", "interviewing", "offered", "ghosted", "rejected", "interviewRejected"]
 // ── JobList ───────────────────────────────────────────────────────────────────
 // Props:
 //   jobs     — array of job objects

@@ -24,6 +24,11 @@ export const STATUS_CONFIG = {
     color: "bg-violet-500/15 text-violet-300 border-violet-500/20",
     dot: "bg-violet-400",
   },
+  interviewRejected: {
+    label: "Interview Rejected",
+    color: "bg-orange-500/15 text-orange-400 border-orange-500/20",
+    dot: "bg-orange-400",
+  },
   offered: {
     label: "Offered",
     color: "bg-emerald-500/15 text-emerald-300 border-emerald-500/20",
@@ -48,7 +53,7 @@ export const CHART_COLORS = {
   applied: "#3b82f6",      // blue-500
   awaiting: "#f59e0b",     // amber-500
   interviewing: "#8b5cf6", // violet-500
-  offered: "#10b981",      // emerald-500
+  interviewRejected: "#f97316",  // orange-500  offered: "#10b981",      // emerald-500
   ghosted: "#64748b",      // slate-500
   rejected: "#ef4444",     // red-500
 }
