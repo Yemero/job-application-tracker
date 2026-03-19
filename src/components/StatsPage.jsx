@@ -170,6 +170,7 @@ export default function StatsPage({ jobs }) {
       {/* ── Page header ──────────────────────────────────────────────────── */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-white">Stats</h1>
+        {/* Subtitle */}
         <div className="mt-1">
           <p className="text-white/40 text-sm italic">"{QUOTE.text}"</p>
           <p className="text-white/25 text-xs mt-0.5">— {QUOTE.author}</p>

@@ -6,7 +6,7 @@
 
 import { useState, useRef, useEffect } from "react"
 import { STATUS_CONFIG } from "../utils/statusConfig"
-
+import { formatSalary } from "../utils/formatSalary"
 // ── StatusBadge ───────────────────────────────────────────────────────────────
 const StatusBadge = ({ status }) => {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.applied
@@ -28,7 +28,7 @@ const StatusBadge = ({ status }) => {
 //   className  — extra classes for the display text
 //   inputClass — extra classes for the input element
 //   placeholder — shown when the field is empty
-function InlineText({ value, onSave, className = "", inputClass = "", placeholder = "" }) {
+function InlineText({ value, displayValue, onSave, className = "", inputClass = "", placeholder = "" }) {
   const [editing, setEditing]   = useState(false) // whether input is visible
   const [draft,   setDraft]     = useState(value)  // working copy while editing
   const inputRef                = useRef(null)
@@ -80,7 +80,7 @@ function InlineText({ value, onSave, className = "", inputClass = "", placeholde
       title="Click to edit"
       className={`cursor-pointer rounded px-1 -mx-1 hover:bg-white/8 transition-colors block ${className}`}
     >
-      {value || <span className="text-white/20 italic">{placeholder || "—"}</span>}
+      {(displayValue || value) || <span className="text-white/20 italic">{placeholder || "—"}</span>}
     </span>
   )
 }
@@ -351,13 +351,23 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
                     />
                   </td>
 
-                  {/* Salary */}
+                  {/* Salary
                   <td className="px-5 py-3.5">
                     <InlineText
                       value={job.salary}
                       onSave={(v) => saveField(job.id, "salary", v)}
                       className="text-white/50 font-mono text-xs"
                       placeholder=""
+                    />
+                  </td> */}
+                  {/* Salary */}
+                  <td className="px-5 py-3.5">
+                    <InlineText
+                      value={job.salary}
+                      displayValue={formatSalary(job.salary)}
+                      onSave={(v) => saveField(job.id, "salary", v)}
+                      className="text-white/50 font-mono text-xs"
+                      placeholder="e.g. 60000 - 70000"
                     />
                   </td>
 
