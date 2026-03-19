@@ -9,6 +9,25 @@
 import { useMemo } from "react"
 import { STATUS_CONFIG, CHART_COLORS } from "../utils/statusConfig"
 
+const QUOTES = [
+  { text: "Every application is a step forward, even the ones that don't pan out.", author: "Unknown" },
+  { text: "The right opportunity is out there. Keep showing up.", author: "Unknown" },
+  { text: "Rejection is redirection.", author: "Unknown" },
+  { text: "You only need one yes.", author: "Unknown" },
+  { text: "Success is the sum of small efforts, repeated day in and day out.", author: "Robert Collier" },
+  { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+  { text: "Every no gets you closer to the right yes.", author: "Unknown" },
+  { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+  { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+  { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+  { text: "A setback is a setup for a comeback.", author: "T.D. Jakes" },
+  { text: "Opportunities don't happen. You create them.", author: "Chris Grosser" },
+  { text: "Persistence is the difference between those who make it and those who don't.", author: "Unknown" },
+]
+
+const QUOTE = QUOTES[Math.floor(Math.random() * QUOTES.length)]
+
+
 // ── DonutChart ────────────────────────────────────────────────────────────────
 // Renders a pure SVG donut chart using the strokeDasharray technique.
 //
@@ -151,7 +170,10 @@ export default function StatsPage({ jobs }) {
       {/* ── Page header ──────────────────────────────────────────────────── */}
       <div className="mb-8">
         <h1 className="text-2xl font-semibold tracking-tight text-white">Stats</h1>
-        <p className="text-white/40 text-sm mt-1">Overview of your job search</p>
+        <div className="mt-1">
+          <p className="text-white/40 text-sm italic">"{QUOTE.text}"</p>
+          <p className="text-white/25 text-xs mt-0.5">— {QUOTE.author}</p>
+        </div>
       </div>
 
       {/* ── Summary stat cards ────────────────────────────────────────────── */}

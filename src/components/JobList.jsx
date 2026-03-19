@@ -132,16 +132,28 @@ function InlineDate({ value, onSave }) {
 // Clicking the status badge opens a small dropdown of all status options.
 // Selecting one saves immediately and closes the dropdown.
 function InlineStatus({ value, onSave }) {
-  const [open, setOpen] = useState(false)
-  const ref             = useRef(null)
+  const [open,    setOpen]    = useState(false)
+  const [openUp,  setOpenUp]  = useState(false)
+  const ref                   = useRef(null)
 
-  // Close the dropdown if the user clicks anywhere outside it
+  // Close dropdown on outside click
   useEffect(() => {
     if (!open) return
     const handler = (e) => { if (ref.current && !ref.current.contains(e.target)) setOpen(false) }
     document.addEventListener("mousedown", handler)
     return () => document.removeEventListener("mousedown", handler)
   }, [open])
+
+  const toggle = () => {
+    if (!open && ref.current) {
+      // Measure how much space is below the button vs above
+      // and open in whichever direction has more room
+      const rect = ref.current.getBoundingClientRect()
+      const spaceBelow = window.innerHeight - rect.bottom
+      setOpenUp(spaceBelow < 220) // 220px ≈ height of the dropdown
+    }
+    setOpen((o) => !o)
+  }
 
   const select = (key) => {
     setOpen(false)
@@ -150,14 +162,14 @@ function InlineStatus({ value, onSave }) {
 
   return (
     <div ref={ref} className="relative inline-block">
-      {/* Clicking the badge toggles the dropdown */}
-      <button onClick={() => setOpen((o) => !o)} title="Click to change status">
+      <button onClick={toggle} title="Click to change status">
         <StatusBadge status={value} />
       </button>
 
-      {/* Dropdown panel — absolutely positioned below the badge */}
       {open && (
-        <div className="absolute top-full left-0 mt-1.5 bg-[#1e1e2a] border border-white/10 rounded-xl shadow-2xl z-30 py-1.5 min-w-[160px]">
+        <div className={`absolute left-0 bg-[#1e1e2a] border border-white/10 rounded-xl shadow-2xl z-30 py-1.5 min-w-[160px] ${
+          openUp ? "bottom-full mb-1.5" : "top-full mt-1.5"
+        }`}>
           {Object.entries(STATUS_CONFIG).map(([key, cfg]) => (
             <button
               key={key}
@@ -168,7 +180,6 @@ function InlineStatus({ value, onSave }) {
             >
               <span className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${cfg.dot}`} />
               {cfg.label}
-              {/* Checkmark on the currently selected option */}
               {key === value && (
                 <svg className="ml-auto text-violet-400" width="12" height="12" viewBox="0 0 12 12" fill="none">
                   <path d="M2 6l3 3 5-5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
