@@ -1,4 +1,4 @@
-# JobTrack
+# JobTrack (Working Title)
 
 A personal job application tracker built with React and Tailwind — log applications, track statuses, and visualize your job search pipeline.
 
@@ -72,19 +72,13 @@ src/
 ## Extending
 
 | Goal                  | Where to look                         |
-|-----------------------|---------------------------------------|
+|---                    |---                                    |
 | Add a new status      | `statusConfig.js`                     |
-|-----------------------|---------------------------------------|
 | Add a new field       | `JobForm.jsx` + `JobList.jsx`         |
-|-----------------------|---------------------------------------|
 | Add a new chart       | `StatsPage.jsx`                       |
-|-----------------------|---------------------------------------|
 | Sync across devices   | Replace `useJobs.js` with Supabase    |
-|-----------------------|---------------------------------------|
 | Add user accounts     | Supabase Auth + auth provider wrapper |
-|-----------------------|---------------------------------------|
-| Add verfication to    |  `importExport.jsx` in utils &        |
-| importing & exporting |   components                          |
-|-----------------------|---------------------------------------|
-|
+| Add verfication to importing & exporting |`importExport.jsx` in utils & components       |
+| Update and improve UX and UI |  `components`  |
+
 
