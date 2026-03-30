@@ -7,6 +7,7 @@ import JobList from "./components/JobList"
 import StatsPage from "./components/StatsPage"
 import JobForm from "./components/JobForm"
 import { useJobs } from "./hooks/useJobs"
+import ImportExport from "./components/ImportExport"
 
 export default function App() {
   // --- State ---
@@ -116,6 +117,22 @@ export default function App() {
             </svg>
             Stats
           </button>
+
+          {/* Import/Export nav item */}
+          <button
+            onClick={() => setView("importexport")}
+            className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all flex items-center gap-3 ${
+              view === "importexport"
+                ? "bg-violet-500/15 text-violet-300"
+                : "text-white/40 hover:text-white/70 hover:bg-white/5"
+            }`}
+          >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 2v8M5 7l3 3 3-3" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"/>
+            </svg>
+            Import / Export
+          </button>
         </nav>
 
         {/* Add Application button — pinned to the bottom of the sidebar */}
@@ -140,10 +157,11 @@ export default function App() {
         {/* Pass jobs data down, and the edit/delete/update handlers as callbacks.
             onUpdate is new — it saves a single field change from inline editing. */}
         {view === "applications" ? (
-          <JobList jobs={jobs} onEdit={handleEdit} onDelete={deleteJob} onUpdate={updateJob} />
-        ) : (
-          // Stats only needs read access to jobs — no mutations needed
+          <JobList jobs={jobs} onEdit={handleEdit} onDelete={deleteJob} onUpdate={updateJob} onAdd={addJob} />
+        ) : view === "stats" ? (
           <StatsPage jobs={jobs} />
+        ) : (
+          <ImportExport jobs={jobs} onAdd={addJob} />
         )}
       </main>
 

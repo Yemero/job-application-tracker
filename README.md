@@ -40,13 +40,17 @@ App opens automatically at `http://localhost:5173`.
 src/
 ├── App.jsx                  # Root layout, navigation, modal state
 ├── components/
+│   ├── ImportExport.jsx     # Import and export job data
 │   ├── JobList.jsx          # Applications table with inline editing
 │   ├── JobForm.jsx          # Add / edit modal form
 │   └── StatsPage.jsx        # Charts and stats dashboard
 ├── hooks/
 │   └── useJobs.js           # Data management + localStorage sync
 └── utils/
+    ├── formatSalay.jsx      # Text formatting for salary
+    ├── importExport.jsx     # Reading & writing for exporting/importing data
     └── statusConfig.js      # Status labels, colors, chart colors
+
 ```
 
 ---
@@ -67,12 +71,20 @@ src/
 
 ## Extending
 
-| Goal | Where to look |
-|---|---|
-| Add a new status | `statusConfig.js` |
-| Add a new field | `JobForm.jsx` + `JobList.jsx` |
-| Add a new chart | `StatsPage.jsx` |
-| Sync across devices | Replace `useJobs.js` with Supabase |
-| Add user accounts | Supabase Auth + auth provider wrapper |
+| Goal                  | Where to look                         |
+|-----------------------|---------------------------------------|
+| Add a new status      | `statusConfig.js`                     |
+|-----------------------|---------------------------------------|
+| Add a new field       | `JobForm.jsx` + `JobList.jsx`         |
+|-----------------------|---------------------------------------|
+| Add a new chart       | `StatsPage.jsx`                       |
+|-----------------------|---------------------------------------|
+| Sync across devices   | Replace `useJobs.js` with Supabase    |
+|-----------------------|---------------------------------------|
+| Add user accounts     | Supabase Auth + auth provider wrapper |
+|-----------------------|---------------------------------------|
+| Add verfication to    |  `importExport.jsx` in utils &        |
+| importing & exporting |   components                          |
+|-----------------------|---------------------------------------|
+|
 
----
