@@ -8,6 +8,9 @@
 
 import { useMemo } from "react"
 import { STATUS_CONFIG, CHART_COLORS } from "../utils/statusConfig"
+import { useRef, useEffect } from "react"
+import * as d3 from "d3"
+import { sankey, sankeyLinkHorizontal } from "d3-sankey"
 
 const QUOTES = [
   { text: "Every application is a step forward, even the ones that don't pan out.", author: "Unknown" },
@@ -27,6 +30,126 @@ const QUOTES = [
 
 const QUOTE = QUOTES[Math.floor(Math.random() * QUOTES.length)]
 
+// ── DonutChart ────────────────────────────────────────────────────────────────
+// requires d3-sankey 
+function SankeyChart({ jobs }) {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (!ref.current || jobs.length === 0) return
+
+    const applied       = jobs.length
+    const gotResponse   = jobs.filter(j => ["interviewing","offered","rejected","interviewRejected"].includes(j.status)).length
+    const ghosted       = jobs.filter(j => j.status === "ghosted").length
+    const interviewing  = jobs.filter(j => ["interviewing","offered","interviewRejected"].includes(j.status)).length
+    const awaiting      = jobs.filter(j => j.status === "awaiting").length
+    const offered       = jobs.filter(j => j.status === "offered").length
+    const rejected      = jobs.filter(j => j.status === "rejected").length
+    const intRejected   = jobs.filter(j => j.status === "interviewRejected").length
+
+    // Nodes
+    const nodes = [
+      { id: 0, name: "Applied" },
+      { id: 1, name: "Awaiting" },
+      { id: 2, name: "Got Response" },
+      { id: 3, name: "Ghosted" },
+      { id: 4, name: "Interviewing" },
+      { id: 5, name: "Rejected" },
+      { id: 6, name: "Interview Rejected" },
+      { id: 7, name: "Offered" },
+    ]
+
+    // Links — only include links with value > 0
+    const rawLinks = [
+      { source: 0, target: 1, value: awaiting },
+      { source: 0, target: 2, value: gotResponse },
+      { source: 0, target: 3, value: ghosted },
+      { source: 2, target: 4, value: interviewing },
+      { source: 2, target: 5, value: rejected },
+      { source: 4, target: 6, value: intRejected },
+      { source: 4, target: 7, value: offered },
+    ].filter(l => l.value > 0)
+
+    // Only include nodes that are referenced by active links
+    const activeNodeIds = new Set(rawLinks.flatMap(l => [l.source, l.target]))
+    const activeNodes   = nodes.filter(n => activeNodeIds.has(n.id))
+    const idMap         = new Map(activeNodes.map((n, i) => [n.id, i]))
+    const links         = rawLinks.map(l => ({ source: idMap.get(l.source), target: idMap.get(l.target), value: l.value }))
+
+    const width  = ref.current.clientWidth
+    const height = 320
+
+    // Clear previous render
+    d3.select(ref.current).selectAll("*").remove()
+
+    const svg = d3.select(ref.current)
+      .append("svg")
+      .attr("width", width)
+      .attr("height", height)
+
+    const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches
+    const textColor = isDark ? "rgba(255,255,255,0.5)" : "rgba(0,0,0,0.5)"
+
+    const nodeColors = {
+      "Applied":            "#8b5cf6",
+      "Awaiting":           "#f59e0b",
+      "Got Response":       "#3b82f6",
+      "Ghosted":            "#64748b",
+      "Interviewing":       "#8b5cf6",
+      "Rejected":           "#ef4444",
+      "Interview Rejected": "#f97316",
+      "Offered":            "#10b981",
+    }
+
+    const { nodes: sNodes, links: sLinks } = sankey()
+      .nodeId((d) => d.index)
+      .nodeWidth(16)
+      .nodePadding(24)
+      .extent([[24, 16], [width - 24, height - 16]])
+      ({ nodes: activeNodes.map((n, i) => ({ ...n, index: i })), links })
+
+    // Draw links
+    svg.append("g")
+      .selectAll("path")
+      .data(sLinks)
+      .join("path")
+      .attr("d", sankeyLinkHorizontal())
+      .attr("fill", "none")
+      .attr("stroke", (d) => nodeColors[d.source.name] || "#8b5cf6")
+      .attr("stroke-width", (d) => Math.max(1, d.width))
+      .attr("stroke-opacity", 0.25)
+
+    // Draw nodes
+    svg.append("g")
+      .selectAll("rect")
+      .data(sNodes)
+      .join("rect")
+      .attr("x", (d) => d.x0)
+      .attr("y", (d) => d.y0)
+      .attr("width", (d) => d.x1 - d.x0)
+      .attr("height", (d) => Math.max(1, d.y1 - d.y0))
+      .attr("fill", (d) => nodeColors[d.name] || "#8b5cf6")
+      .attr("rx", 3)
+
+    // Draw labels
+    svg.append("g")
+      .selectAll("text")
+      .data(sNodes)
+      .join("text")
+      .attr("x", (d) => d.x0 < width / 2 ? d.x1 + 8 : d.x0 - 8)
+      .attr("y", (d) => (d.y0 + d.y1) / 2)
+      .attr("dy", "0.35em")
+      .attr("text-anchor", (d) => d.x0 < width / 2 ? "start" : "end")
+      .attr("font-size", 11)
+      .attr("fill", textColor)
+      .text((d) => `${d.name} (${d.value})`)
+
+  }, [jobs])
+
+  if (jobs.length === 0) return null
+
+  return <div ref={ref} className="w-full" />
+}
 
 // ── DonutChart ────────────────────────────────────────────────────────────────
 // Renders a pure SVG donut chart using the strokeDasharray technique.
@@ -300,6 +423,11 @@ export default function StatsPage({ jobs }) {
             </div>
           ))}
         </div>
+      </div>
+      {/* Sankey diagram */}
+      <div className="bg-white/3 border border-white/8 rounded-xl p-6 mt-6">
+        <h3 className="text-sm font-medium text-white/70 mb-5">Application flow</h3>
+        <SankeyChart jobs={jobs} />
       </div>
     </div>
   )
