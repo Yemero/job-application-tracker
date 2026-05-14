@@ -205,11 +205,22 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
   const [filter,        setFilter]        = useState("all")
   const [search,        setSearch]        = useState("")
   const [sortBy,        setSortBy]        = useState("date")
+  const [sortDir,       setSortDir]       = useState("desc") // "asc" | "desc"
   const [confirmDelete, setConfirmDelete] = useState(null)
 
   // Helper: save a single field for a job without touching the rest
   // e.g. saveField("abc123", "status", "offered")
   const saveField = (id, field, value) => onUpdate(id, { [field]: value })
+
+  // Sorting: clicking a column header sorts by that field, clicking again toggles direction
+  const handleSort = (field) => {
+    if (sortBy === field) {
+      setSortDir((d) => d === "asc" ? "desc" : "asc") // toggle direction
+    } else {
+      setSortBy(field)
+      setSortDir("asc")
+    }
+  }
 
   const filtered = jobs
     .filter((j) => filter === "all" || j.status === filter)
@@ -219,27 +230,37 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
       j.role.toLowerCase().includes(search.toLowerCase())
     )
     .sort((a, b) => {
-          if (sortBy === "date") {
-            return new Date(b.date) - new Date(a.date)
-          }
-          if (sortBy === "company") {
-            const aVal = a.company?.trim()
-            const bVal = b.company?.trim()
-            if (!aVal && !bVal) return 0
-            if (!aVal) return 1   // a is empty → push to bottom
-            if (!bVal) return -1  // b is empty → push to bottom
-            return aVal.localeCompare(bVal)
-          }
-          if (sortBy === "salary") {
-            const aVal = a.salary?.trim()
-            const bVal = b.salary?.trim()
-            if (!aVal && !bVal) return 0
-            if (!aVal) return 1
-            if (!bVal) return -1
-            return aVal.localeCompare(bVal)
-          }
-          return 0
-        })
+      const dir = sortDir === "asc" ? 1 : -1
+
+      if (sortBy === "date") {
+        return (new Date(a.date) - new Date(b.date)) * dir
+      }
+      if (sortBy === "company") {
+        const aVal = a.company?.trim()
+        const bVal = b.company?.trim()
+        if (!aVal && !bVal) return 0
+        if (!aVal) return 1
+        if (!bVal) return -1
+        return aVal.localeCompare(bVal) * dir
+      }
+      if (sortBy === "role") {
+        const aVal = a.role?.trim()
+        const bVal = b.role?.trim()
+        if (!aVal && !bVal) return 0
+        if (!aVal) return 1
+        if (!bVal) return -1
+        return aVal.localeCompare(bVal) * dir
+      }
+      if (sortBy === "salary") {
+        const aVal = a.salary?.trim()
+        const bVal = b.salary?.trim()
+        if (!aVal && !bVal) return 0
+        if (!aVal) return 1
+        if (!bVal) return -1
+        return aVal.localeCompare(bVal) * dir
+      }
+      return 0
+    })
 
   return (
     <div className="p-8">
@@ -269,15 +290,7 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
               className="w-full bg-white/5 border border-white/8 text-white text-sm pl-9 pr-4 py-2.5 rounded-lg focus:outline-none focus:border-violet-500/50 placeholder:text-white/25 transition-colors"
             />
           </div>
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value)}
-            className="bg-[#1a1a24] border border-white/8 text-white/70 text-sm px-3 py-2.5 rounded-lg focus:outline-none focus:border-violet-500/50 transition-colors"
-          >
-            <option value="date">Sort: Date</option>
-            <option value="company">Sort: Company</option>
-            <option value="salary">Sort: Salary</option>
-          </select>
+
         </div>
 
         <div className="flex gap-2 flex-wrap">
@@ -314,10 +327,35 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-white/8 bg-white/3">
-                <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Company</th>
-                <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Role</th>
-                <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Salary</th>
-                <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Date</th>
+                {[
+                  { label: "Company", field: "company" },
+                  { label: "Role",    field: "role"    },
+                  { label: "Salary",  field: "salary"  },
+                  { label: "Date",    field: "date"    },
+                ].map(({ label, field }) => (
+                  <th
+                    key={field}
+                    onClick={() => handleSort(field)}
+                    className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider cursor-pointer hover:text-white/60 transition-colors select-none"
+                  >
+                    <span className="inline-flex items-center gap-1.5">
+                      {label}
+                      {/* Sort indicator — only shown on the active column */}
+                      {sortBy === field ? (
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-violet-400">
+                          {sortDir === "asc"
+                            ? <path d="M5 8V2M2 5l3-3 3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                            : <path d="M5 2v6M2 5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                          }
+                        </svg>
+                      ) : (
+                        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" className="text-white/15">
+                          <path d="M5 2v6M2 5l3 3 3-3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      )}
+                    </span>
+                  </th>
+                ))}
                 <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Status</th>
                 <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Notes</th>
                 <th className="px-5 py-3.5"></th>
