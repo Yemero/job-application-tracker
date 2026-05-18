@@ -80,5 +80,5 @@ src/
 | Add user accounts     | Supabase Auth + auth provider wrapper |
 | Add verfication to importing & exporting |`importExport.jsx` in utils & components       |
 | Update and improve UX and UI |  `components`  |
-
+| Data Analyis |         Create data models to analyze job applications|
 
