@@ -222,6 +222,7 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
     }
   }
 
+  // Filtering, searching, and sorting
   const filtered = jobs
     .filter((j) => filter === "all" || j.status === filter)
     .filter((j) =>
