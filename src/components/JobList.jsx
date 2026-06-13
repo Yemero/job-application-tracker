@@ -215,10 +215,11 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
   // Sorting: clicking a column header sorts by that field, clicking again toggles direction
   const handleSort = (field) => {
     if (sortBy === field) {
-      setSortDir((d) => d === "asc" ? "desc" : "asc") // toggle direction
+      setSortDir((d) => d === "asc" ? "desc" : "asc")
     } else {
       setSortBy(field)
-      setSortDir("asc")
+      // Status sorts desc by default so "most progressed" appears at the top first
+      setSortDir(field === "status" ? "desc" : "asc")
     }
   }
 
@@ -258,6 +259,13 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
         if (!aVal) return 1
         if (!bVal) return -1
         return aVal.localeCompare(bVal) * dir
+      }
+      if (sortBy === "status") {
+        const order = ["offered", "interviewing", "interviewRejected", "awaiting", "applied", "rejected", "ghosted"]
+        const aIdx = order.indexOf(a.status)
+        const bIdx = order.indexOf(b.status)
+        // Multiply by -1 because asc (first click) should show most progressed first
+        return (aIdx - bIdx) * dir * -1
       }
       return 0
     })
@@ -332,6 +340,7 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
                   { label: "Role",    field: "role"    },
                   { label: "Salary",  field: "salary"  },
                   { label: "Date",    field: "date"    },
+                  { label: "Status",  field: "status"  },
                 ].map(({ label, field }) => (
                   <th
                     key={field}
@@ -356,7 +365,7 @@ export default function JobList({ jobs, onEdit, onUpdate, onDelete }) {
                     </span>
                   </th>
                 ))}
-                <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Status</th>
+                {/* <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Status</th> */}
                 <th className="text-left px-5 py-3.5 text-white/35 font-medium text-xs uppercase tracking-wider">Notes</th>
                 <th className="px-5 py-3.5"></th>
               </tr>
